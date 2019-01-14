@@ -51,7 +51,7 @@ jobs:
           working_directory: test/fixture
           environment:
             PLATFORM_ENV: ci
-          command: inspec exec ../integration/default/tf_aws_aurora_rds.rb -t aws://
+          command: inspec exec ../integration/default/tf_aws_aurora_rds.rb
       - run:
           name: destroy aws resources
           working_directory: test/fixture
