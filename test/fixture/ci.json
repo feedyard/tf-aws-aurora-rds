@@ -1,0 +1,15 @@
+{
+  "name": "feedyard-ci-test-aurora-rds",
+  "engine": "aurora-postgresql",
+  "engine_version": "10.5",
+  "replica_count": "1",
+  "apply_immediately": "true",
+  "skip_final_snapshot": "true",
+
+  "cluster_name": "ci.feedyard.io",
+  "cluster_vpc_name": "vpc-ci-tf-aws-platform",
+  "cluster_cidr_reservation_start": "0",
+  "cluster_azs" : ["us-east-1b","us-east-1c","us-east-1d","us-east-1e"],
+  "cluster_vpc_id": "vpc-09e2f6d993cdbdc5a",
+  "cluster_db_subnets_azs": ["us-east-1b","us-east-1c","us-east-1d","us-east-1e"]
+}

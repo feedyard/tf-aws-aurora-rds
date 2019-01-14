@@ -1,3 +1,4 @@
+
 output "rds_cluster_id" {
   value = "${aws_rds_cluster.mod.id}"
 }
@@ -26,6 +27,7 @@ output "rds_cluster_instance_endpoints" {
   value = ["${aws_rds_cluster_instance.mod.*.endpoint}"]
 }
 
+# aurora rds cluster security group
 output "security_group_id" {
   value = "${aws_security_group.mod.id}"
 }

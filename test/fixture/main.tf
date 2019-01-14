@@ -1,16 +1,17 @@
 module "aurora" {
-  source                        = "../../"
+  source = "../../"
 
-  name                          = "${var.name}"
-  engine                        = "${var.engine}"
-  engine_version                = "${var.engine_version}"
-  cluster_db_subnet_group       = "${module.vpc.database_subnet_group}"
-  cluster_db_subnets_azs        = ["${var.availability_zones}"]
-  vpc_id                        = "${module.vpc.vpc_id}"
-  replica_count                 = "${var.replica_count}"
-  apply_immediately             = "${var.apply_immediately}"
-  skip_final_snapshot           = "${var.skip_final_snapshot}"
-  cluster_nodes_security_group  = "${aws_security_group.test_security_group.id}"
+  name                = "${var.name}"
+  engine              = "${var.engine}"
+  engine_version      = "${var.engine_version}"
+  replica_count       = "${var.replica_count}"
+  apply_immediately   = "${var.apply_immediately}"
+  skip_final_snapshot = "${var.skip_final_snapshot}"
+
+  vpc_id                        = "${module.cluster_vpc.vpc_id}"
+  cluster_db_subnet_group       = "${module.cluster_vpc.db_subnet_group}"
+  cluster_db_subnets_azs        = ["${slice(var.cluster_azs,0,3)}"]
+  cluster_worker_security_group = "${aws_security_group.cluster_worker_security_group.id}"
 
   tags = {
     "test"     = "terraform module continuous integration testing"
@@ -18,33 +19,36 @@ module "aurora" {
   }
 }
 
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+module "cluster_vpc" {
+  source = "github.com/feedyard/tf-aws-platform-vpc?ref=0.0.1"
 
-  name = "feedyard-ci-test-vpc"
-  cidr = "10.0.0.0/16"
-  azs  = ["${var.availability_zones}"]
+  name                   = "${var.cluster_vpc_name}"
+  cluster_name           = "${var.cluster_name}"
+  cidr_reservation_start = "${var.cluster_cidr_reservation_start}"
+  azs                    = "${var.cluster_azs}"
 
-  private_subnets = [
-    "10.0.1.0/24",
-    "10.0.2.0/24",
-    "10.0.3.0/25",
-  ]
+  enable_dns_hostnames = "true"
+  enable_dns_support   = "true"
+  enable_nat_gateway   = "false}"
 
-  public_subnets = [
-    "10.0.4.0/24",
-    "10.0.5.0/24",
-    "10.0.6.0/25",
-  ]
-
-  database_subnets = [
-    "10.0.7.0/24",
-    "10.0.8.0/24",
-    "10.0.9.0/25",
-  ]
+  tags {
+    "test"     = "terraform module continuous integration testing"
+    "pipeline" = "feedyard/tf-aws-aurora-rds"
+  }
 }
 
-resource "aws_security_group" "test_security_group" {
-  name   = "feedyard-ci-test-security-group"
-  vpc_id = "${module.vpc.vpc_id}"
+locals {
+  workers_sg_tags = {
+    test     = "terraform module continuous integration testing"
+    pipeline = "feedyard/tf-aws-aurora-rds"
+  }
+}
+
+resource "aws_security_group" "cluster_worker_security_group" {
+  description = "Security group for all nodes in the cluster."
+
+  name_prefix = "${var.cluster_name}"
+  vpc_id      = "${module.cluster_vpc.vpc_id}"
+
+  tags = "${merge("${local.workers_sg_tags}", map("Name", "ci_worker_sg", "kubernetes.io/cluster/${var.cluster_name}", "shared"))}"
 }

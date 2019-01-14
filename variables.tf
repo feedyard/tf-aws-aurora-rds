@@ -1,41 +1,23 @@
-# assumptions related to a di-aurora-rds definition
-#
-# this are used in conjunction with a k8 cluster on a platform-vpc definition
-#
-# therefore, you must publish and make available
-#
-# for the target cluster
-# vpc_id (id) the k8 cluster vpc id
-# cluster_db_subnet_group (group id) the subnet group id for the k8 cluster private subnets
-# cluster_db_subnets_azs (list of the k8 cluster private subnet azs)
-# cluster_nodes_security_group (sg id) security group id associated with nodes in the k8 cluster to put in the allowed list
-
-
 # name for the rds cluster resource. This optional, terraform will assign a random unique identifier
 variable "name" {}
-
-# providing a default database to create at provision not yet supported by module
-# variable "database_name" {}
 
 # prevent database resource from being deleted
 variable "deletion_protection" {
   default = "false"
 }
 
-# must provide master password/username unless database being restored from master snapshot
-variable "master_password" {
-  default = ""
-}
+# must provide master password and username unless database being restored from master snapshot
+variable "master_password" { default = "" }
 
+# must provide master password and username unless database being restored from master snapshot
 variable "master_username" {
   default = "postgres"
 }
 
-# when the database resource is deleted a final snapshot will be created unless set to skip. Must specify name.
-variable "final_snapshot_identifier" {
-  default = ""
-}
+# when the database resource is deleted a final snapshot will be created unless set to skip
+variable "final_snapshot_identifier" { default = "" }
 
+# when the database resource is deleted a final snapshot will be created unless set to skip
 variable "skip_final_snapshot" {
   default = "false"
 }
@@ -64,33 +46,24 @@ variable "preferred_maintenance_window" {
 }
 
 # default connection port. a local resource provider will set to default postgresql or mysql aurora values 3306-5432
-variable "port" {
-  default = ""
-}
+variable "port" { default = "" }
 
 # vpc in which to create the db security group
-variable "vpc_id" {}
-
-//# list of security groups to associate with cluster
-//variable "vpc_security_group_ids" { default = [] }
+variable "vpc_id" { type = "string" }
 
 # list of security groups associated with nodes in the k8 cluster
-variable "cluster_nodes_security_group" {}
+variable "cluster_worker_security_group" { type = "string" }
 
 # create this cluster from a snapshot
-variable "snapshot_identifier" {
-  default = ""
-}
+variable "snapshot_identifier" { default = "" }
 
 # encrypt cluster
 variable "storage_encrypted" {
   default = "true"
 }
 
-# ARN of a source DB cluster or DB instance if this DB cluster is to be created as a Read Replica.
-variable "replication_source_identifier" {
-  default = ""
-}
+# ARN of a source DB cluster or DB instance if this DB cluster is to be created as a Read Replica
+variable "replication_source_identifier" { default = "" }
 
 # cluster modifications are applied immediately or (false) during the next maintenance window. default is false
 variable "apply_immediately" {
@@ -98,22 +71,17 @@ variable "apply_immediately" {
 }
 
 # subnets to assign to DB subnet group created for the cluster resource
-# NOTE: This must match the db_subnet_group_name specified on every aws_rds_cluster_instance in the cluster
-variable "cluster_db_subnet_group" {}
+variable "cluster_db_subnet_group" { type = "string" }
 
 # see aws docuemntation for customization details
-variable "db_cluster_parameter_group_name" {
-  default = ""
-}
+variable "db_cluster_parameter_group_name" { default = "" }
 
 # specify a specific key for database encryption
-variable "kms_key_id" {
-  default = ""
-}
+variable "kms_key_id" { default = "" }
 
 # list of IAM roles to assign to the cluster
 variable "iam_roles" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
@@ -138,19 +106,17 @@ variable "engine_version" {
 }
 
 # source region for an encrypted replica DB cluster
-variable "source_region" {
-  default = ""
-}
+variable "source_region" { default = "" }
 
 # types of logs to emit (audit, error, general, slowquery). default is audit
 variable "enabled_cloudwatch_logs_exports" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
 # scaling configuration for use with serverless
 variable "scaling_configuration" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
@@ -161,7 +127,7 @@ variable "replica_count" {
 
 # enable autoscaling for read replicas
 variable "replica_scale_enabled" {
-  default = false
+  default = "false"
 }
 
 # max number of replicas
@@ -179,15 +145,13 @@ variable "instance_type" {
   default = "db.r4.large"
 }
 
-# provide public ip for db. default = false
+# provide public ip for db. default is false
 variable "publicly_accessible" {
   default = "false"
 }
 
 # see aws docuemntation for customization details
-variable "db_parameter_group_name" {
-  default = ""
-}
+variable "db_parameter_group_name" { default = "" }
 
 #interval (seconds) between points when Enhanced Monitoring metrics are collected
 variable "monitoring_interval" {
@@ -205,9 +169,7 @@ variable "performance_insights_enabled" {
 }
 
 # KMS key to encrypt Performance Insights data
-variable "performance_insights_kms_key_id" {
-  default = ""
-}
+variable "performance_insights_kms_key_id" { default = "" }
 
 # CPU usage to trigger autoscaling
 variable "replica_scale_cpu" {
@@ -224,7 +186,8 @@ variable "replica_scale_out_cooldown" {
   default = "300"
 }
 
+# tags
 variable "tags" {
-  type = "map"
+  type    = "map"
   default = {}
 }

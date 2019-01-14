@@ -1,8 +1,0 @@
-{
-  "name": "feedyard-ci-test-aurora-rds",
-  "engine": "aurora-postgresql",
-  "engine_version": "10.5",
-  "replica_count": "1",
-  "apply_immediately": "true",
-  "skip_final_snapshot": "true"
-}

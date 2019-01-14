@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "aws" {
-  version = ">= 1.54"
+  version = ">= 1.55"
   region  = "${var.aws_region}"
 }
 
@@ -14,12 +14,14 @@ variable "aws_region" {
 variable "name" {}
 variable "engine" {}
 variable "engine_version" {}
-
-variable "availability_zones" {
-  type = "list"
-  default = ["us-east-1a", "us-east-1b", "us-east-1c"]
-}
-
 variable "replica_count" {}
 variable "apply_immediately" {}
 variable "skip_final_snapshot" {}
+
+variable "cluster_name" {}
+variable "cluster_vpc_name" {}
+variable "cluster_cidr_reservation_start" {}
+
+variable "cluster_azs" {
+  type = "list"
+}

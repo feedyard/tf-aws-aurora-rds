@@ -51,8 +51,8 @@ resource "random_id" "snapshot_identifier" {
 }
 
 resource "aws_security_group" "mod" {
-  name        = "${var.name}-aurora-rds-sg"
-  vpc_id      = "${var.vpc_id}"
+  name   = "${var.name}-aurora-rds-sg"
+  vpc_id = "${var.vpc_id}"
 
   tags = "${var.tags}"
 }
@@ -62,7 +62,7 @@ resource "aws_security_group_rule" "default_ingress" {
   from_port                = "${aws_rds_cluster.mod.port}"
   to_port                  = "${aws_rds_cluster.mod.port}"
   protocol                 = "tcp"
-  source_security_group_id = "${var.cluster_nodes_security_group}"
+  source_security_group_id = "${var.cluster_worker_security_group}"
   security_group_id        = "${aws_security_group.mod.id}"
 }
 
